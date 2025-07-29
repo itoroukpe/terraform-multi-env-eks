@@ -1,4 +1,7 @@
-variable "cluster_name" {}
-variable "vpc_id" {}
-variable "subnet_ids" {}
-variable "tags" {}
+output "cluster_name" {
+  value = module.eks.cluster_name
+}
+
+output "cluster_endpoint" {
+  value = module.eks.cluster_endpoint
+}
