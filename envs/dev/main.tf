@@ -1,33 +1,26 @@
-terraform {
-  required_providers {
-    aws = {
-      source  = "hashicorp/aws"
-      version = ">= 5.0.0"
-    }
-  }
-
-  required_version = ">= 1.3.0"
-}
-
-
-provider "aws" {
-  region = var.region
-}
-
 module "vpc" {
-  source          = "../../modules/vpc"
-  vpc_name        = "dev-vpc"
-  vpc_cidr        = "10.10.0.0/16"
-  azs             = ["us-west-2a", "us-west-2b"]
-  public_subnets  = ["10.10.1.0/24", "10.10.2.0/24"]
-  private_subnets = ["10.10.3.0/24", "10.10.4.0/24"]
-  tags            = { Environment = "dev" }
+  source = "../../modules/vpc"
+
+  name            = "dev-vpc"
+  cidr_block      = "10.0.0.0/16"
+  azs             = ["us-east-1a", "us-east-1b"]
+  public_subnets  = ["10.0.1.0/24", "10.0.2.0/24"]
+  private_subnets = ["10.0.3.0/24", "10.0.4.0/24"]
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }
 
 module "eks" {
-  source       = "../../modules/eks"
-  cluster_name = "dev-eks-cluster"
-  vpc_id       = module.vpc.vpc_id
-  subnet_ids   = module.vpc.private_subnets
-  tags         = { Environment = "dev" }
+  source  = "../../modules/eks"
+
+  cluster_name    = "dev-eks-cluster"
+  cluster_version = "1.28"
+  vpc_id          = module.vpc.vpc_id
+  subnet_ids      = module.vpc.private_subnets
+  tags = {
+    Environment = "dev"
+    Terraform   = "true"
+  }
 }
