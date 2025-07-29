@@ -1,16 +1,19 @@
-module "vpc" {
-  source = "terraform-aws-modules/vpc/aws"
+module "eks" {
+  source  = "terraform-aws-modules/eks/aws"
 
-  name = var.name
-  cidr = var.cidr_block
+  cluster_name    = var.cluster_name
+  cluster_version = var.cluster_version
+  vpc_id          = var.vpc_id
+  subnet_ids      = var.subnet_ids
 
-  azs             = var.azs
-  public_subnets  = var.public_subnets
-  private_subnets = var.private_subnets
-
-  enable_nat_gateway = true
-  single_nat_gateway = true
-  enable_dns_hostnames = true
+  eks_managed_node_groups = {
+    default = {
+      desired_size = 2
+      max_size     = 3
+      min_size     = 1
+      instance_types = ["t3.medium"]
+    }
+  }
 
   tags = var.tags
 }
