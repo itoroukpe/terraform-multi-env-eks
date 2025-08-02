@@ -1,3 +1,105 @@
+Great — once your **EKS clusters are created**, accessing them requires a few setup steps. Here’s a **step-by-step guide** to access your EKS clusters from your terminal:
+
+---
+
+## ✅ Prerequisites
+
+Make sure these are installed on your system:
+
+* `awscli`
+* `kubectl`
+* `eksctl` (optional, but useful)
+* Correct `AWS credentials` (with access to the EKS cluster)
+
+---
+
+## 🔐 Step 1: Authenticate with AWS
+
+```bash
+aws configure
+```
+
+Or if using environment variables:
+
+```bash
+export AWS_ACCESS_KEY_ID=your-access-key
+export AWS_SECRET_ACCESS_KEY=your-secret-key
+export AWS_REGION=your-region
+```
+
+---
+
+## 📡 Step 2: Update kubeconfig for your EKS cluster
+
+Terraform doesn’t automatically update your `~/.kube/config` file. You can do it manually with:
+
+```bash
+aws eks update-kubeconfig --region your-region --name your-cluster-name
+```
+
+Example:
+
+```bash
+aws eks update-kubeconfig --region us-west-2 --name dev-cluster
+```
+
+This command:
+
+* Retrieves the cluster info from AWS
+* Writes it to your kubeconfig file
+* Adds context named `arn:aws:eks:region:account-id:cluster/cluster-name`
+
+---
+
+## 📂 Step 3: Verify Connection
+
+Run:
+
+```bash
+kubectl config get-contexts
+```
+
+Then:
+
+```bash
+kubectl get nodes
+```
+
+You should see your EKS worker nodes listed if everything is working.
+
+---
+
+## 🔄 Optional: Switch Context Between Environments
+
+If you deployed multiple clusters (e.g., dev, qa, prod), each `update-kubeconfig` call will append a new context.
+
+List contexts:
+
+```bash
+kubectl config get-contexts
+```
+
+Switch context:
+
+```bash
+kubectl config use-context <context-name>
+```
+
+---
+
+## 🧠 Troubleshooting Tips
+
+| Issue                             | Fix                                                                                      |
+| --------------------------------- | ---------------------------------------------------------------------------------------- |
+| `Unable to connect to the server` | Check `aws eks update-kubeconfig` and IAM permissions                                    |
+| `No resources found`              | Cluster might be empty (no deployments yet)                                              |
+| `Unauthorized` or `AccessDenied`  | Ensure your IAM user/role is in the `aws-auth` ConfigMap (we can fix this too if needed) |
+
+---
+
+
+
+---
 # terraform-multi-env-eks
 
 You're now getting a **file permission error** on `terraform.tfstate`, because **you previously ran Terraform with `sudo`**, which made the `terraform.tfstate` file owned by `root`.
