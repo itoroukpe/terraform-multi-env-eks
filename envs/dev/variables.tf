@@ -11,5 +11,5 @@ variable "cluster_version" {
 variable "aws_region" {
   description = "AWS region"
   type        = string
-  default     = "us-west-2" # or your preferred region
+  default     = "us-east-1" # or your preferred region
 }
